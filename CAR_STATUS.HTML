@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المركز</title>
+    <style>
+        body { font-family: Arial, sans-serif; direction: rtl; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+        button { margin: 5px; }
+        .modal { /* styles for modal */ }
+        .modal.active { display: block; }
+        .modal-overlay { /* styles for overlay */ }
+        .modal-overlay.active { display: block; }
+        .modal input, .modal select { 
+            margin-bottom: 10px; 
+            width: 100%; 
+            padding: 8px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>لوحة تحكم المركز</h1>
+    <button onclick="window.openEditModal(-1)">إضافة بيانات</button>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>رقم الملف</th>
+                <th>اسم العميل</th>
+                <th>لوحة رقم</th>
+                <th>الفني</th>
+                <th>الأهمية</th>
+                <th>تاريخ التسليم</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- البيانات ستضاف هنا عبر JavaScript -->
+        </tbody>
+    </table>
+
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="editModal">
+        <h3>تعديل البيانات</h3>
+        <input type="text" id="editFileNumber" placeholder="رقم الملف">
+        <input type="text" id="editClientName" placeholder="اسم العميل">
+        <input type="text" id="editPlateNumber" placeholder="لوحة الرقم">
+        <select id="editTechnician">
+            <option value="">اختر الفني</option>
+            <option value="نادر">نادر</option>
+            <option value="سامر">سامر</option>
+            <option value="وسام">وسام</option>
+            <option value="ريان">ريان</option>
+            <option value="فهد">فهد</option>
+            <option value="عامر">عامر</option>
+            <option value="خالد">خالد</option>
+            <option value="أبوفارس">أبوفارس</option>
+            <option value="سامر بخش">سامر بخش</option>
+        </select>
+        <select id="editPriority">
+            <option value="">اختر الأهمية</option>
+            <option value="منخفضة">منخفضة</option>
+            <option value="متوسطة">متوسطة</option>
+            <option value="عالية">عالية</option>
+        </select>
+        <input type="date" id="editDeliveryDate" placeholder="تاريخ التسليم">
+        <select id="editStatus">
+            <option value="">اختر الحالة</option>
+            <option value="قيد الانتظار">قيد الانتظار</option>
+            <option value="قيد التنفيذ">قيد التنفيذ</option>
+            <option value="ملغي">ملغي</option>
+            <option value="مكتمل">مكتمل</option>
+        </select>
+        <button onclick="window.saveEdit()">حفظ</button>
+        <button onclick="window.closeModal()">إلغاء</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDART1zb3Ew99AqSeMi-korEbd0Gxiobk8",
+            authDomain: "mazda-console.firebaseapp.com",
+            projectId: "mazda-console",
+            storageBucket: "mazda-console.appspot.com",
+            messagingSenderId: "1096386890488",
+            appId: "1:1096386890488:web:04e9e465caa7ebec73090d"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // تعريف المتغيرات
+        let data = [];
+        let editIndex = null;
+
+        async function fetchData() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'data'));
+                data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderTable();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function renderTable() {
+            let tableBody = document.querySelector("#dataTable tbody");
+            tableBody.innerHTML = "";
+            data.forEach((item, index) => {
+                let row = `<tr>
+                    <td>${item.fileNumber}</td>
+                    <td>${item.client}</td>
+                    <td>${item.plate}</td>
+                    <td>${item.technician}</td>
+                    <td>${item.priority}</td>
+                    <td>${item.deliveryDate}</td>
+                    <td>${item.status}</td>
+                    <td>
+                        <button onclick="window.openEditModal(${index})">تعديل</button>
+                        <button onclick="window.deleteData('${item.id}')">حذف</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function openEditModal(index) {
+            editIndex = index;
+            if (index === -1) {
+                document.getElementById("editFileNumber").value = "";
+                document.getElementById("editClientName").value = "";
+                document.getElementById("editPlateNumber").value = "";
+                document.getElementById("editTechnician").value = "";
+                document.getElementById("editPriority").value = "";
+                document.getElementById("editDeliveryDate").value = "";
+                document.getElementById("editStatus").value = "";
+            } else {
+                let item = data[index];
+                document.getElementById("editFileNumber").value = item.fileNumber;
+                document.getElementById("editClientName").value = item.client;
+                document.getElementById("editPlateNumber").value = item.plate;
+                document.getElementById("editTechnician").value = item.technician;
+                document.getElementById("editPriority").value = item.priority;
+                document.getElementById("editDeliveryDate").value = item.deliveryDate;
+                document.getElementById("editStatus").value = item.status;
+            }
+
+            document.getElementById("editModal").classList.add("active");
+            document.getElementById("modalOverlay").classList.add("active");
+        }
+
+        function closeModal() {
+            document.getElementById("editModal").classList.remove("active");
+            document.getElementById("modalOverlay").classList.remove("active");
+        }
+
+        async function saveEdit() {
+            const newItem = {
+                fileNumber: document.getElementById("editFileNumber").value,
+                client: document.getElementById("editClientName").value,
+                plate: document.getElementById("editPlateNumber").value,
+                technician: document.getElementById("editTechnician").value,
+                priority: document.getElementById("editPriority").value,
+                deliveryDate: document.getElementById("editDeliveryDate").value,
+                status: document.getElementById("editStatus").value
+            };
+
+            try {
+                if (editIndex === -1) {
+                    await addDoc(collection(db, 'data'), newItem);
+                } else {
+                    await updateDoc(doc(db, 'data', data[editIndex].id), newItem);
+                }
+                await fetchData();
+                closeModal();
+            } catch (error) {
+                console.error('Error saving data:', error);
+            }
+        }
+
+        async function deleteData(id) {
+            if (confirm("هل أنت متأكد من حذف هذا السجل؟")) {
+                try {
+                    await deleteDoc(doc(db, 'data', id));
+                    await fetchData();
+                } catch (error) {
+                    console.error('Error deleting data:', error);
+                }
+            }
+        }
+
+        // جعل الدوال متاحة بشكل عام
+        window.openEditModal = openEditModal;
+        window.closeModal = closeModal;
+        window.saveEdit = saveEdit;
+        window.deleteData = deleteData;
+
+        // جلب البيانات عند تحميل الصفحة
+        fetchData();
+    </script>
+</body>
+</html>

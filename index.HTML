@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم المركز</title>
+    <title>متابعة السيارات المركز</title>
     <style>
         body { font-family: Arial, sans-serif; direction: rtl; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-    <h1>لوحة تحكم المركز</h1>
+    <h1>متابعة السيارات المركز</h1>
     <button onclick="window.openEditModal(-1)">إضافة بيانات</button>
     <table id="dataTable">
         <thead>
@@ -31,7 +31,7 @@
                 <th>اسم العميل</th>
                 <th>لوحة رقم</th>
                 <th>الفني</th>
-                <th>الأهمية</th>
+                <th>كود</th>
                 <th>تاريخ التسليم</th>
                 <th>الحالة</th>
                 <th>الإجراءات</th>
@@ -61,10 +61,10 @@
             <option value="سامر بخش">سامر بخش</option>
         </select>
         <select id="editPriority">
-            <option value="">اختر الأهمية</option>
-            <option value="منخفضة">منخفضة</option>
-            <option value="متوسطة">متوسطة</option>
-            <option value="عالية">عالية</option>
+            <option value="">اختر كود</option>
+            <option value="silver">silver</option>
+            <option value="Yellow">Yellow</option>
+            <option value="Red">Red</option>
         </select>
         <input type="date" id="editDeliveryDate" placeholder="تاريخ التسليم">
         <select id="editStatus">

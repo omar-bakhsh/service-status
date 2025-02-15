@@ -19,6 +19,9 @@
             width: 100%; 
             padding: 8px; 
         }
+        .Red{background-color: red;}
+        .Silver{background-color: rgb(206, 206, 206);}
+        .Yellow{background-color: rgb(231, 208, 0);}
     </style>
 </head>
 <body>
@@ -51,7 +54,7 @@
         <select id="editTechnician">
             <option value="">اختر الفني</option>
             <option value="نادر">نادر</option>
-            <option value="سامر">سامر</option>
+            <option value="سامر اسماعيل">سامر اسماعيل</option>
             <option value="وسام">وسام</option>
             <option value="ريان">ريان</option>
             <option value="فهد">فهد</option>
@@ -61,18 +64,18 @@
             <option value="سامر بخش">سامر بخش</option>
         </select>
         <select id="editPriority">
-            <option value="">اختر كود</option>
-            <option value="silver">silver</option>
-            <option value="Yellow">Yellow</option>
-            <option value="Red">Red</option>
+            <option class="select_code" value="">اختر كود</option>
+            <option class="Silver" value="silver">silver</option>
+            <option class="Yellow" value="Yellow">Yellow</option>
+            <option class="Red" value="Red">Red</option>
         </select>
         <input type="date" id="editDeliveryDate" placeholder="تاريخ التسليم">
         <select id="editStatus">
             <option value="">اختر الحالة</option>
-            <option value="قيد الانتظار">قيد الانتظار</option>
-            <option value="قيد التنفيذ">قيد التنفيذ</option>
-            <option value="ملغي">ملغي</option>
-            <option value="مكتمل">مكتمل</option>
+            <option class="Red"  value="قيد الانتظار">قيد الانتظار</option>
+            <option class="Silver" value="قيد التنفيذ">قيد التنفيذ</option>
+            <option class="Red" value="ملغي">ملغي</option>
+            <option class="green" value="مكتمل">مكتمل</option>
         </select>
         <button onclick="window.saveEdit()">حفظ</button>
         <button onclick="window.closeModal()">إلغاء</button>

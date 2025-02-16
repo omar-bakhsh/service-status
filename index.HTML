@@ -207,6 +207,30 @@
 
         // جلب البيانات عند تحميل الصفحة
         fetchData();
+
+// color change 
+  document.addEventListener("DOMContentLoaded", function() {
+            const table = document.getElementById("dataTable");
+            const rows = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < rows.length; i++) { // Skip header row
+                const cells = rows[i].getElementsByTagName("td");
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell.innerText.toLowerCase() === "silver") {
+                        cell.style.backgroundColor = "#e9ecef";
+                    } else if (cell.innerText.toLowerCase() === "red") {
+                        cell.style.backgroundColor = "#f00";
+                    } else if (cell.innerText.toLowerCase() === "yellow") {
+                        cell.style.backgroundColor = "#ffc107";
+                    }
+                }
+            }
+        });
+
+window.setTimeout( function() {
+  window.location.reload();
+}, 120000);
     </script>
 </body>
 </html>
